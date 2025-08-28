@@ -3,11 +3,11 @@ package org.example;
 import java.time.LocalDate;
 
 public class Task {
-    private int id;
-    private String title;
-    private String description;
-    private LocalDate endDate;
-    private String status;
+    private final int id;
+    private final String title;
+    private final String description;
+    private final LocalDate endDate;
+    private final String status;
 
 
 
@@ -26,6 +26,6 @@ public class Task {
     @Override
     public String toString() {
         return "Id: " + id + "\nTitle: " + title + "\nDescription: "
-                + description + "\nEndDate: " + endDate + "\nStatus: ";
+                + description + "\nEndDate: " + endDate + "\nStatus: " + status;
     }
 }

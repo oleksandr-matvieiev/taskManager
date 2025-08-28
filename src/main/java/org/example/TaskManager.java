@@ -25,7 +25,7 @@ public class TaskManager {
         }
     }
 
-    public List<Task> vievTasks() {
+    public List<Task> viewTasks() {
         String sql = "SELECT id, title, description,endDate, status from tasks";
         List<Task> taskList = new ArrayList<>();
         try (Connection conn = this.connection();
@@ -52,39 +52,39 @@ public class TaskManager {
         String sql = "DELETE FROM tasks where id=?";
 
         try (Connection conn = this.connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)
         ) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         System.out.println("Task removed");
     }
 
-    public void makrAsCompleted(int id) {
+    public void markAsCompleted(int id) {
         String sql = "UPDATE tasks set status = ? where id=?";
 
 
         try (Connection conn = connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, "Completed");
-            pstmt.setInt(2, id);
-            pstmt.executeUpdate();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, "Completed");
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
             System.out.println("Status changed");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public List<Task> vievTasksByStatus(String status) {
+    public List<Task> viewTasksByStatus(String status) {
         String sql = "SELECT id,title,description,endDate,status from tasks where status=?";
         List<Task> tasks = new ArrayList<>();
 
         try (Connection conn = connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, status);
-            ResultSet rs = pstmt.executeQuery();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, status);
+            ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
                 Task task = new Task(

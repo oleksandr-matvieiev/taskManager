@@ -18,11 +18,11 @@ public class Main {
             System.out.println("2. Remove task");
             System.out.println("3. Mark task as completed");
             System.out.println("4. View all tasks");
-            System.out.println("5. Viev tasks by status");
+            System.out.println("5. View tasks by status");
             System.out.println("0. Exit ");
 
-            int choise = sc.nextInt();
-            switch (choise) {
+            int choice = sc.nextInt();
+            switch (choice) {
                 case 1:
                     try {
                         System.out.println("Write title:");
@@ -47,19 +47,19 @@ public class Main {
                 case 3:
                     System.out.println("Which task completed?(id)");
                     int idCompleted = sc.nextInt();
-                    taskManager.makrAsCompleted(idCompleted);
+                    taskManager.markAsCompleted(idCompleted);
                     System.out.println("Good job");
                     System.out.println();
                     break;
                 case 4:
-                    List<Task> allTasks = taskManager.vievTasks();
+                    List<Task> allTasks = taskManager.viewTasks();
                     allTasks.forEach(System.out::println);
                     System.out.println();
                     break;
                 case 5:
                     System.out.println("Enter status for filter(Pending/Completed");
-                    String statusForFiltr = sc.next();
-                    List<Task> tasksByStatus = taskManager.vievTasksByStatus(statusForFiltr);
+                    String statusForFilter = sc.next();
+                    List<Task> tasksByStatus = taskManager.viewTasksByStatus(statusForFilter);
                     tasksByStatus.forEach(System.out::println);
                     System.out.println();
                     break;
