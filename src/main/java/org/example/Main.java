@@ -5,11 +5,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskDAO taskDAO = new TaskDAO();
+        TaskManager taskManager = new TaskManager(taskDAO);
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Hello its task manager. Please chose option\n");
@@ -31,7 +30,9 @@ public class Main {
                         String description = sc.next();
                         System.out.println("Write date (Format YYYY-MM-DD)");
                         LocalDate date = LocalDate.parse(sc.next());
-                        taskManager.addTask(title, description, date);
+                        taskManager.addTask(new Task(title, description, date, TaskStatus.IN_PROGRESS));
+
+                        System.out.println("Task added successfully!");
                     } catch (DateTimeException e) {
                         System.out.println(e.getMessage());
                     }
@@ -47,7 +48,7 @@ public class Main {
                 case 3:
                     System.out.println("Which task completed?(id)");
                     int idCompleted = sc.nextInt();
-                    taskManager.markAsCompleted(idCompleted);
+                    taskManager.markTaskAsDone(idCompleted);
                     System.out.println("Good job");
                     System.out.println();
                     break;
@@ -57,9 +58,31 @@ public class Main {
                     System.out.println();
                     break;
                 case 5:
-                    System.out.println("Enter status for filter(Pending/Completed");
-                    String statusForFilter = sc.next();
-                    List<Task> tasksByStatus = taskManager.viewTasksByStatus(statusForFilter);
+                    System.out.println("Enter number of status for filter");
+                    System.out.println("1. Failed");
+                    System.out.println("2. In Progress");
+                    System.out.println("3. Done");
+
+                    TaskStatus status;
+
+                    int a = sc.nextInt();
+
+                    switch (a) {
+                        case 1:
+                            status = TaskStatus.FAILED;
+                            break;
+                        case 2:
+                            status = TaskStatus.IN_PROGRESS;
+                            break;
+                        case 3:
+                            status = TaskStatus.DONE;
+                            break;
+                        default:
+                            System.out.println("Wrong option! Option Done will be used");
+                            status = TaskStatus.DONE;
+                            break;
+                    }
+                    List<Task> tasksByStatus = taskManager.viewTasksByStatus(status);
                     tasksByStatus.forEach(System.out::println);
                     System.out.println();
                     break;
