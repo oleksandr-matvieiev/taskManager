@@ -31,10 +31,10 @@ public class Database {
 
     public static void createNewTable() {
         String sql = "CREATE TABLE IF NOT EXISTS tasks( \n" +
-                "id integer PRIMARY KEY,\n" +
+                "id integer PRIMARY KEY AUTOINCREMENT ,\n" +
                 "title text not null,\n" +
                 "description text,\n " +
-                "endDate text,\n" +
+                "endDate date,\n" +
                 "status text\n" +
                 ");";
         try (Connection conn = connect();
