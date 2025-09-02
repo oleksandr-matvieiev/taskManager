@@ -7,14 +7,13 @@ import java.time.LocalDate;
 
 public class Task {
     private int id;
-    @NotNull
+    @NotNull(message = "Task title is required!")
     @Size(min = 1, max = 50)
     private  String title;
-    @NotNull
     @Size(min = 1, max = 50)
     private  String description;
-    @NotNull
-    @Future
+    @NotNull(message = "End date is required!")
+    @FutureOrPresent
     private LocalDate endDate;
     @NotNull
     private  TaskStatus status;
@@ -71,7 +70,18 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Id: " + id + "\nTitle: " + title + "\nDescription: "
-                + description + "\nEndDate: " + endDate + "\nStatus: " + status.toString();
+        String separator = "+----+------------------------------+------------------------------+------------+----------+\n";
+        String header = String.format("| %-2s | %-28s | %-28s | %-10s | %-8s |\n",
+                "ID", "Title", "Description", "End Date", "Status");
+        String row = String.format("| %-2d | %-28s | %-28s | %-10s | %-8s |\n",
+                id,
+                title != null ? title : "",
+                description != null ? description : "",
+                endDate != null ? endDate.toString() : "",
+                status != null ? status.toString() : ""
+        );
+
+        return separator + header + separator + row + separator;
     }
+
 }
