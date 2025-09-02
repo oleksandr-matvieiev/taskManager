@@ -2,6 +2,7 @@ package org.example;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,15 +22,16 @@ public class Main {
             System.out.println("0. Exit ");
 
             int choice = sc.nextInt();
+            sc.nextLine();
             switch (choice) {
                 case 1:
                     try {
                         System.out.println("Write title:");
-                        String title = sc.next();
+                        String title = sc.nextLine();
                         System.out.println("Write description:");
-                        String description = sc.next();
-                        System.out.println("Write date (Format YYYY-MM-DD)");
-                        LocalDate date = LocalDate.parse(sc.next());
+                        String description = sc.nextLine();
+                        System.out.println("Write date (Format dd-MM-yyyy or ddMMyyy )");
+                        LocalDate date = formatDate(sc.next());
                         taskManager.addTask(new Task(title, description, date, TaskStatus.IN_PROGRESS));
 
                         System.out.println("Task added successfully!");
@@ -95,5 +97,16 @@ public class Main {
                     break;
             }
         }
+    }
+
+    private static LocalDate formatDate(String input) {
+        if (input.matches("\\d{8}")) {
+            input = input.substring(0, 2) + "." +
+                    input.substring(2, 4) + "." +
+                    input.substring(4);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        return LocalDate.parse(input, formatter);
     }
 }

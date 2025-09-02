@@ -4,6 +4,7 @@ package org.example;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
     private int id;
@@ -70,6 +71,7 @@ public class Task {
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String separator = "+----+------------------------------+------------------------------+------------+----------+\n";
         String header = String.format("| %-2s | %-28s | %-28s | %-10s | %-8s |\n",
                 "ID", "Title", "Description", "End Date", "Status");
@@ -77,7 +79,7 @@ public class Task {
                 id,
                 title != null ? title : "",
                 description != null ? description : "",
-                endDate != null ? endDate.toString() : "",
+                endDate != null ? endDate.format(formatter) : "",
                 status != null ? status.toString() : ""
         );
 
