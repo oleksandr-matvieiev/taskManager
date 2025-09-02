@@ -43,7 +43,7 @@ public class TaskDAO {
                 task.setDescription(resultSet.getString("description"));
                 task.setEndDate(resultSet.getDate("endDate").toLocalDate());
 
-                if (isTaskFailed(task.getEndDate())) {
+                if (!isTaskFailed(task.getEndDate())) {
                     task.setStatus(TaskStatus.FAILED);
                 } else {
                     task.setStatus(TaskStatus.valueOf(resultSet.getString("status")));
@@ -78,7 +78,7 @@ public class TaskDAO {
 
             preparedStatement.setString(1, TaskStatus.DONE.toString());
             preparedStatement.setInt(2, id);
-
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
