@@ -45,6 +45,7 @@ public class TaskDAO {
 
                 if (!isTaskFailed(task.getEndDate())) {
                     task.setStatus(TaskStatus.FAILED);
+                    updateTaskStatusToFailed(task.getId());
                 } else {
                     task.setStatus(TaskStatus.valueOf(resultSet.getString("status")));
                 }
@@ -112,6 +113,21 @@ public class TaskDAO {
 
     private boolean isTaskFailed(LocalDate date) {
         return date.isAfter(LocalDate.now());
+    }
+
+    private void updateTaskStatusToFailed(int id) {
+        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
+
+        try (Connection connection = connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, TaskStatus.FAILED.toString());
+            preparedStatement.setInt(2, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
