@@ -56,7 +56,7 @@ public class Main {
                     break;
                 case 4:
                     List<Task> allTasks = taskManager.viewTasks();
-                    allTasks.forEach(System.out::println);
+                    TaskPrinter.printTasks(allTasks);
                     System.out.println();
                     break;
                 case 5:
@@ -69,23 +69,17 @@ public class Main {
 
                     int a = sc.nextInt();
 
-                    switch (a) {
-                        case 1:
-                            status = TaskStatus.FAILED;
-                            break;
-                        case 2:
-                            status = TaskStatus.IN_PROGRESS;
-                            break;
-                        case 3:
-                            status = TaskStatus.DONE;
-                            break;
-                        default:
+                    status = switch (a) {
+                        case 1 -> TaskStatus.FAILED;
+                        case 2 -> TaskStatus.IN_PROGRESS;
+                        case 3 -> TaskStatus.DONE;
+                        default -> {
                             System.out.println("Wrong option! Option Done will be used");
-                            status = TaskStatus.DONE;
-                            break;
-                    }
+                            yield TaskStatus.DONE;
+                        }
+                    };
                     List<Task> tasksByStatus = taskManager.viewTasksByStatus(status);
-                    tasksByStatus.forEach(System.out::println);
+                    TaskPrinter.printTasks(tasksByStatus);
                     System.out.println();
                     break;
                 case 0:

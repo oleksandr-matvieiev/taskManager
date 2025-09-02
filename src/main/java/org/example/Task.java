@@ -4,12 +4,11 @@ package org.example;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class Task {
     private int id;
     @NotNull(message = "Task title is required!")
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 30)
     private  String title;
     @Size(min = 1, max = 50)
     private  String description;
@@ -67,23 +66,6 @@ public class Task {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String separator = "+----+------------------------------+------------------------------+------------+----------+\n";
-        String header = String.format("| %-2s | %-28s | %-28s | %-10s | %-8s |\n",
-                "ID", "Title", "Description", "End Date", "Status");
-        String row = String.format("| %-2d | %-28s | %-28s | %-10s | %-8s |\n",
-                id,
-                title != null ? title : "",
-                description != null ? description : "",
-                endDate != null ? endDate.format(formatter) : "",
-                status != null ? status.toString() : ""
-        );
-
-        return separator + header + separator + row + separator;
     }
 
 }
