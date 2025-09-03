@@ -11,8 +11,8 @@ public class TaskManager {
     private final TaskDAO taskDAO;
     private final Validator validator;
 
-    public TaskManager(TaskDAO taskDAO) {
-        this.taskDAO = taskDAO;
+    public TaskManager() {
+        this.taskDAO = new TaskDAO();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         this.validator = factory.getValidator();
     }
