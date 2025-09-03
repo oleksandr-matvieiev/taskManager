@@ -2,6 +2,7 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -27,6 +28,7 @@ public class Toast {
 
         JWindow window = new JWindow();
         window.setLayout(new BorderLayout());
+        window.setBackground(new Color(0, 0, 0, 0));
 
         JLabel label = new JLabel(message);
         label.setFont(new Font("Arial", Font.BOLD, 12));
@@ -53,12 +55,13 @@ public class Toast {
         topPanel.setSize(300, 10);
         topPanel.add(closeButton, BorderLayout.EAST);
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.setBackground(new Color(60, 60, 60));
-        contentPanel.setForeground(Color.WHITE);
+        JPanel contentPanel = getJPanel();
 
-        contentPanel.add(topPanel, BorderLayout.NORTH);
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
+        header.add(closeButton, BorderLayout.EAST);
+
+        contentPanel.add(header, BorderLayout.NORTH);
         contentPanel.add(label, BorderLayout.CENTER);
 
         window.add(contentPanel, BorderLayout.CENTER);
@@ -78,6 +81,23 @@ public class Toast {
 
         timer.setRepeats(false);
         timer.start();
+    }
+
+    private static JPanel getJPanel() {
+        JPanel contentPanel = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(60,60,60));
+                g2d.fill(new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20));
+                g2d.dispose();
+            }
+        };
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setOpaque(false);
+        return contentPanel;
     }
 
 
