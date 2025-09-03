@@ -2,29 +2,83 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Toast {
-    public static void showToast(String message, int durationMs) {
+    private static final Queue<String> queue = new LinkedList<>();
+    private static boolean showing = false;
+
+    public static void showToast(String message, int duration) {
+        queue.add(message);
+        if (!showing) {
+            showNextToast(duration);
+        }
+    }
+
+    private static void showNextToast(int duration) {
+        if (queue.isEmpty()) {
+            showing = false;
+            return;
+        }
+
+        showing = true;
+        String message = queue.poll();
+
         JWindow window = new JWindow();
+        window.setLayout(new BorderLayout());
 
         JLabel label = new JLabel(message);
-        label.setOpaque(true);
-        label.setBackground(new Color(60, 60, 60));
+        label.setFont(new Font("Arial", Font.BOLD, 12));
+        label.setHorizontalAlignment(JLabel.CENTER);
         label.setForeground(Color.WHITE);
-        label.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        window.add(label);
-        window.pack();
+        JButton closeButton = new JButton("×");
+        closeButton.setBorderPainted(false);
+        closeButton.setFocusPainted(false);
+        closeButton.setContentAreaFilled(false);
+        closeButton.setFont(new Font("Arial", Font.BOLD, 16));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        closeButton.setForeground(Color.RED);
+
+        closeButton.addActionListener(e -> {
+            window.dispose();
+            showNextToast(duration);
+        });
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.setBackground(new Color(75, 68, 68));
+        topPanel.setSize(300, 10);
+        topPanel.add(closeButton, BorderLayout.EAST);
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(60, 60, 60));
+        contentPanel.setForeground(Color.WHITE);
+
+        contentPanel.add(topPanel, BorderLayout.NORTH);
+        contentPanel.add(label, BorderLayout.CENTER);
+
+        window.add(contentPanel, BorderLayout.CENTER);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int x = (screenSize.width - window.getWidth()) / 2;
+        window.pack();
+        int x = (screenSize.width - window.getWidth()) ;
         int y = (screenSize.height - window.getHeight()) - 50;
         window.setLocation(x, y);
-
-
         window.setVisible(true);
-        new Timer(durationMs, e -> window.dispose()).start();
 
+        Timer timer = new Timer(duration, e -> {
+            window.dispose();
+            showNextToast(duration);
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
+
+
 }
