@@ -10,7 +10,7 @@ public class TaskNotifier {
         LocalDate now = LocalDate.now();
 
         for (Task task : tasks) {
-            if (task.getEndDate() != null) {
+            if (task.getEndDate() != null && task.getStatus()!=TaskStatus.DONE) {
                 long daysLeft = ChronoUnit.DAYS.between(now, task.getEndDate());
 
                 if (daysLeft == 3) {
