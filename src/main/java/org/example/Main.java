@@ -13,29 +13,29 @@ public class Main {
         TaskManager taskManager = new TaskManager(taskDAO);
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Hello its task manager. Please chose option\n");
+        SystemPrinter.success("Welcome to Task Manager. Please enter the option:");
         while (true) {
-            System.out.println("1. Add task");
-            System.out.println("2. Remove task");
-            System.out.println("3. Mark task as completed");
-            System.out.println("4. View all tasks");
-            System.out.println("5. View tasks by status");
-            System.out.println("0. Exit ");
+            SystemPrinter.info("1. Add task");
+            SystemPrinter.info("2. Remove task");
+            SystemPrinter.info("3. Mark task as completed");
+            SystemPrinter.info("4. View all tasks");
+            SystemPrinter.info("5. View tasks by status");
+            SystemPrinter.info("0. Exit ");
 
             int choice = sc.nextInt();
             sc.nextLine();
             switch (choice) {
                 case 1:
                     try {
-                        System.out.println("Write title:");
+                        SystemPrinter.info("Write title:");
                         String title = sc.nextLine();
-                        System.out.println("Write description:");
+                        SystemPrinter.info("Write description:");
                         String description = sc.nextLine();
-                        System.out.println("Write date (Format dd-MM-yyyy or ddMMyyy )");
+                        SystemPrinter.info("Write date (Format dd-MM-yyyy or ddMMyyy )");
                         LocalDate date = formatDate(sc.next());
                         taskManager.addTask(new Task(title, description, date, TaskStatus.IN_PROGRESS));
 
-                        System.out.println("Task added successfully!");
+                        SystemPrinter.success("Task added successfully!");
                     } catch (DateTimeException e) {
                         System.out.println(e.getMessage());
                     }
@@ -45,16 +45,16 @@ public class Main {
                     List<Task> tasksToRemove = taskManager.viewTasks();
                     Map<Integer, Integer> deleteMap = TaskPrinter.printTasks(tasksToRemove);
 
-                    System.out.println("Enter number of task you want to remove:");
+                    SystemPrinter.info("Enter number of task you want to remove:");
                     int numberToRemove = sc.nextInt();
 
                     Integer id = deleteMap.get(numberToRemove);
 
                     if (id != null) {
                         taskManager.removeTask(id);
-                        System.out.println("Task removed");
+                        SystemPrinter.success("Task removed");
                     } else {
-                        System.out.println("Invalid task number");
+                        SystemPrinter.warn("Invalid task number");
                     }
                     System.out.println();
                     break;
@@ -62,11 +62,11 @@ public class Main {
                     List<Task> tasksToComplete = taskManager.viewTasks();
                     Map<Integer, Integer> taskToMarkAsCompleted = TaskPrinter.printTasks(tasksToComplete);
 
-                    System.out.println("Enter number of task which is completed:)");
+                    SystemPrinter.info("Enter number of task which is completed:)");
                     int numberCompleted = sc.nextInt();
                     Integer idCompleted = taskToMarkAsCompleted.get(numberCompleted);
                     taskManager.markTaskAsDone(idCompleted);
-                    System.out.println("Good job!");
+                    SystemPrinter.success("Good job!");
                     System.out.println();
                     break;
                 case 4:
@@ -75,10 +75,10 @@ public class Main {
                     System.out.println();
                     break;
                 case 5:
-                    System.out.println("Enter number of status for filter");
-                    System.out.println("1. Failed");
-                    System.out.println("2. In Progress");
-                    System.out.println("3. Done");
+                    SystemPrinter.info("Enter number of status for filter");
+                    SystemPrinter.info("1. Failed");
+                    SystemPrinter.info("2. In Progress");
+                    SystemPrinter.info("3. Done");
 
                     TaskStatus status;
 
@@ -89,7 +89,7 @@ public class Main {
                         case 2 -> TaskStatus.IN_PROGRESS;
                         case 3 -> TaskStatus.DONE;
                         default -> {
-                            System.out.println("Wrong option! Option Done will be used");
+                            SystemPrinter.warn("Wrong option! Option Done will be used");
                             yield TaskStatus.DONE;
                         }
                     };
@@ -98,11 +98,11 @@ public class Main {
                     System.out.println();
                     break;
                 case 0:
-                    System.out.println("Bye");
+                    SystemPrinter.success("Bye");
                     sc.close();
                     System.exit(0);
                 default:
-                    System.out.println("Wrong option num");
+                    SystemPrinter.warn("Wrong number of option!");
                     break;
             }
         }
