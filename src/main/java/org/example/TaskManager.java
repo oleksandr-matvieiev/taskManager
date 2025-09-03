@@ -44,4 +44,9 @@ public class TaskManager {
         return taskDAO.getTasksByStatus(status);
     }
 
+
+    public void  checkDeadlines(){
+        List<Task> tasks = taskDAO.getTasks();
+        TaskNotifier.checkDeadlines(tasks);
+    }
 }
