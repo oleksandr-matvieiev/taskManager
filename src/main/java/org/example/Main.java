@@ -4,6 +4,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -41,17 +42,31 @@ public class Main {
                     System.out.println();
                     break;
                 case 2:
-                    System.out.println("Enter Id of task you want remove");
-                    int idToRemove = sc.nextInt();
-                    taskManager.removeTask(idToRemove);
-                    System.out.println("Task removed");
+                    List<Task> tasksToRemove = taskManager.viewTasks();
+                    Map<Integer, Integer> deleteMap = TaskPrinter.printTasks(tasksToRemove);
+
+                    System.out.println("Enter number of task you want to remove:");
+                    int numberToRemove = sc.nextInt();
+
+                    Integer id = deleteMap.get(numberToRemove);
+
+                    if (id != null) {
+                        taskManager.removeTask(id);
+                        System.out.println("Task removed");
+                    } else {
+                        System.out.println("Invalid task number");
+                    }
                     System.out.println();
                     break;
                 case 3:
-                    System.out.println("Which task completed?(id)");
-                    int idCompleted = sc.nextInt();
+                    List<Task> tasksToComplete = taskManager.viewTasks();
+                    Map<Integer, Integer> taskToMarkAsCompleted = TaskPrinter.printTasks(tasksToComplete);
+
+                    System.out.println("Enter number of task which is completed:)");
+                    int numberCompleted = sc.nextInt();
+                    Integer idCompleted = taskToMarkAsCompleted.get(numberCompleted);
                     taskManager.markTaskAsDone(idCompleted);
-                    System.out.println("Good job");
+                    System.out.println("Good job!");
                     System.out.println();
                     break;
                 case 4:
