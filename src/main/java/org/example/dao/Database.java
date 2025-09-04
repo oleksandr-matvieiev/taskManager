@@ -9,47 +9,29 @@ public class Database {
     private static final String URL = "jdbc:sqlite:taskmanager.db";
 
     public static Connection connect() {
-        Connection conn = null;
         try {
-            conn = DriverManager.getConnection(URL);
+            return DriverManager.getConnection(URL);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
-    }
-
-    public static void createNewDatabase() {
-
-        try (Connection conn = DriverManager.getConnection(URL)) {
-            if (conn != null) {
-                System.out.println("DB created!!!");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Cannot connect to DB", e);
         }
     }
 
-    public static void createNewTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS tasks( \n" +
-                "id integer PRIMARY KEY AUTOINCREMENT ,\n" +
-                "title text not null,\n" +
-                "description text,\n " +
-                "endDate date,\n" +
-                "status text\n" +
-                ");";
+    public static void createTables() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    endDate DATE,
+                    status TEXT
+                );
+                """;
+
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
-
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Failed to create tables", e);
         }
     }
-
-    public static void main(String[] args) {
-        createNewDatabase();
-        createNewTable();
-    }
-
-
 }
