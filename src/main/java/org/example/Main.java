@@ -5,6 +5,7 @@ public class Main {
         TaskManager taskManager = new TaskManager();
         TaskUI ui = new TaskUI();
 
+        taskManager.updateTaskStatus();
         taskManager.checkDeadlines();
         ui.start();
     }

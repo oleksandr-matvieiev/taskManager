@@ -36,21 +36,7 @@ public class TaskDAO {
              Statement stmt = conn.createStatement();
              ResultSet resultSet = stmt.executeQuery(sql)) {
 
-            while (resultSet.next()) {
-                Task task = new Task();
-                task.setId(resultSet.getInt("id"));
-                task.setTitle(resultSet.getString("title"));
-                task.setDescription(resultSet.getString("description"));
-                task.setEndDate(resultSet.getDate("endDate").toLocalDate());
-
-                if (!isTaskFailed(task.getEndDate())) {
-                    task.setStatus(TaskStatus.FAILED);
-                    updateTaskStatusToFailed(task.getId());
-                } else {
-                    task.setStatus(TaskStatus.valueOf(resultSet.getString("status")));
-                }
-                taskList.add(task);
-            }
+            mapTasksFromDB(taskList, resultSet);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -95,38 +81,56 @@ public class TaskDAO {
             preparedStatement.setString(1, status.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                Task task = new Task();
-                task.setId(resultSet.getInt("id"));
-                task.setTitle(resultSet.getString("title"));
-                task.setDescription(resultSet.getString("description"));
-                task.setEndDate(resultSet.getDate("endDate").toLocalDate());
-                task.setStatus(TaskStatus.valueOf(resultSet.getString("status")));
-
-                taskList.add(task);
-            }
+            mapTasksFromDB(taskList, resultSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return taskList;
     }
 
-    private boolean isTaskFailed(LocalDate date) {
-        return date.isAfter(LocalDate.now());
-    }
+    public void getAndUpdateTasks() {
+        String sql = "SELECT id, endDate, status FROM tasks";
 
-    private void updateTaskStatusToFailed(int id) {
-        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
+        try (Connection conn = connection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-        try (Connection connection = connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            while (rs.next()) {
+                Task task = new Task();
+                task.setId(rs.getInt("id"));
+                task.setEndDate(rs.getDate("endDate").toLocalDate());
+                TaskStatus currentStatus = TaskStatus.valueOf(rs.getString("status"));
 
-            preparedStatement.setString(1, TaskStatus.FAILED.toString());
-            preparedStatement.setInt(2, id);
+                if (task.getEndDate().isBefore(LocalDate.now()) && currentStatus != TaskStatus.DONE) {
+                    task.setStatus(TaskStatus.FAILED);
 
-            preparedStatement.executeUpdate();
+                    String updateSql = "UPDATE tasks SET status = ? WHERE id = ?";
+                    try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                        ps.setString(1, TaskStatus.FAILED.toString());
+                        ps.setInt(2, task.getId());
+                        ps.executeUpdate();
+                    }
+                } else {
+                    task.setStatus(currentStatus);
+                }
+
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+    }
+
+    private void mapTasksFromDB(List<Task> taskList, ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            Task task = new Task();
+            task.setId(resultSet.getInt("id"));
+            task.setTitle(resultSet.getString("title"));
+            task.setDescription(resultSet.getString("description"));
+            task.setEndDate(resultSet.getDate("endDate").toLocalDate());
+            task.setStatus(TaskStatus.valueOf(resultSet.getString("status")));
+            taskList.add(task);
         }
     }
 
