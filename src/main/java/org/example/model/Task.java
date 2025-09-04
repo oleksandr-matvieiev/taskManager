@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class Task {
-    private int id;
+    private Integer id;
     @NotNull(message = "Task title is required!")
     @Size(min = 1, max = 30)
     private  String title;
