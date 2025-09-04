@@ -1,7 +1,9 @@
 package org.example.ui;
 
+import org.example.dao.TaskDAO;
 import org.example.model.Task;
 import org.example.model.TaskStatus;
+import org.example.service.SwingNotifier;
 import org.example.service.TaskManager;
 
 import java.time.DateTimeException;
@@ -13,7 +15,8 @@ import java.util.Scanner;
 
 public class TaskUI {
     public void start() {
-        TaskManager taskManager = new TaskManager();
+        TaskDAO taskDAO = new TaskDAO();
+        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
         Scanner sc = new Scanner(System.in);
 
         SystemPrinter.success("Welcome to Task Manager. Please enter the option:");
@@ -36,7 +39,7 @@ public class TaskUI {
                         String description = sc.nextLine();
                         SystemPrinter.info("Write date (Format dd-MM-yyyy or ddMMyyyy )");
                         LocalDate date = formatDate(sc.next());
-                        taskManager.addTask(new Task(title, description, date, TaskStatus.IN_PROGRESS));
+                        taskManager.save(new Task(title, description, date, TaskStatus.IN_PROGRESS));
 
                         SystemPrinter.success("Task added successfully!");
                     } catch (DateTimeException e) {
@@ -45,7 +48,7 @@ public class TaskUI {
                     System.out.println();
                     break;
                 case 2:
-                    List<Task> tasksToRemove = taskManager.viewTasks();
+                    List<Task> tasksToRemove = taskManager.findAll();
                     Map<Integer, Integer> deleteMap = TaskPrinter.printTasks(tasksToRemove);
 
                     SystemPrinter.info("Enter number of task you want to remove:");
@@ -54,7 +57,7 @@ public class TaskUI {
                     Integer id = deleteMap.get(numberToRemove);
 
                     if (id != null) {
-                        taskManager.removeTask(id);
+                        taskManager.deleteById(id);
                         SystemPrinter.success("Task removed");
                     } else {
                         SystemPrinter.warn("Invalid task number");
@@ -62,18 +65,18 @@ public class TaskUI {
                     System.out.println();
                     break;
                 case 3:
-                    List<Task> tasksToComplete = taskManager.viewTasks();
+                    List<Task> tasksToComplete = taskManager.findAll();
                     Map<Integer, Integer> taskToMarkAsCompleted = TaskPrinter.printTasks(tasksToComplete);
 
                     SystemPrinter.info("Enter number of task which is completed:)");
                     int numberCompleted = sc.nextInt();
                     Integer idCompleted = taskToMarkAsCompleted.get(numberCompleted);
-                    taskManager.markTaskAsDone(idCompleted);
+                    taskManager.markAsDone(idCompleted);
                     SystemPrinter.success("Good job!");
                     System.out.println();
                     break;
                 case 4:
-                    List<Task> allTasks = taskManager.viewTasks();
+                    List<Task> allTasks = taskManager.findAll();
                     TaskPrinter.printTasks(allTasks);
                     System.out.println();
                     break;
@@ -96,7 +99,7 @@ public class TaskUI {
                             yield TaskStatus.DONE;
                         }
                     };
-                    List<Task> tasksByStatus = taskManager.viewTasksByStatus(status);
+                    List<Task> tasksByStatus = taskManager.findByStatus(status);
                     TaskPrinter.printTasks(tasksByStatus);
                     System.out.println();
                     break;
@@ -110,6 +113,7 @@ public class TaskUI {
             }
         }
     }
+
     private static LocalDate formatDate(String input) {
         if (input.matches("\\d{8}")) {
             input = input.substring(0, 2) + "." +

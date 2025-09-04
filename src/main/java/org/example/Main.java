@@ -1,17 +1,22 @@
 package org.example;
 
 import org.example.dao.Database;
+import org.example.dao.TaskDAO;
+import org.example.service.SwingNotifier;
 import org.example.service.TaskManager;
 import org.example.ui.TaskUI;
+
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         Database.createTables();
-        TaskManager taskManager = new TaskManager();
+        TaskDAO taskDAO = new TaskDAO();
+        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
         TaskUI ui = new TaskUI();
 
-        taskManager.updateTaskStatus();
-        taskManager.checkDeadlines();
+        taskManager.updateExpiredTasks();
+        taskManager.notifyTasks();
         ui.start();
     }
 }
