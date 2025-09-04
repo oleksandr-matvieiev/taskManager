@@ -36,6 +36,10 @@ public class Toast {
         label.setForeground(Color.WHITE);
         label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        JLabel messageType = new JLabel("Reminder");
+        messageType.setFont(new Font("Arial", Font.BOLD, 12));
+        messageType.setForeground(Color.WHITE);
+
         JButton closeButton = new JButton("×");
         closeButton.setBorderPainted(false);
         closeButton.setFocusPainted(false);
@@ -59,6 +63,7 @@ public class Toast {
 
         JPanel header = new JPanel(new BorderLayout());
         header.setOpaque(false);
+        header.add(messageType,BorderLayout.WEST);
         header.add(closeButton, BorderLayout.EAST);
 
         contentPanel.add(header, BorderLayout.NORTH);
