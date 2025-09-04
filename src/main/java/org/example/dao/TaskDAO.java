@@ -1,4 +1,7 @@
-package org.example;
+package org.example.dao;
+
+import org.example.model.Task;
+import org.example.model.TaskStatus;
 
 import java.sql.*;
 import java.time.LocalDate;

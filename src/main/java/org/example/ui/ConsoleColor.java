@@ -1,4 +1,4 @@
-package org.example;
+package org.example.ui;
 
 public enum ConsoleColor {
     RESET("\u001B[0m"),

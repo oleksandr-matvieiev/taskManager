@@ -1,4 +1,8 @@
-package org.example;
+package org.example.service;
+
+import org.example.ui.Toast;
+import org.example.model.Task;
+import org.example.model.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -10,7 +14,7 @@ public class TaskNotifier {
         LocalDate now = LocalDate.now();
 
         for (Task task : tasks) {
-            if (task.getEndDate() != null && task.getStatus()!=TaskStatus.DONE) {
+            if (task.getEndDate() != null && task.getStatus()!= TaskStatus.DONE) {
                 long daysLeft = ChronoUnit.DAYS.between(now, task.getEndDate());
 
                 if (daysLeft == 3) {

@@ -1,4 +1,8 @@
-package org.example;
+package org.example.ui;
+
+import org.example.model.Task;
+import org.example.model.TaskStatus;
+import org.example.service.TaskManager;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;

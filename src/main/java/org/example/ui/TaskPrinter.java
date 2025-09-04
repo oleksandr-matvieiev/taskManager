@@ -1,4 +1,6 @@
-package org.example;
+package org.example.ui;
+
+import org.example.model.Task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

@@ -1,9 +1,12 @@
-package org.example;
+package org.example.service;
 
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.example.dao.TaskDAO;
+import org.example.model.Task;
+import org.example.model.TaskStatus;
 
 import java.util.List;
 
