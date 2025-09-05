@@ -44,9 +44,8 @@ public class TaskManager {
     public void markAsDone(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("Task ID cannot be null");
-        } else {
-            System.out.println("Invalid task ID");
         }
+        taskDAO.markAsDone(id);
 
     }
 
