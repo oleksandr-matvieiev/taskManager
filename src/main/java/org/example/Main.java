@@ -13,10 +13,11 @@ public class Main {
         Database.createTables();
         TaskDAO taskDAO = new TaskDAO();
         TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
-        TaskUI ui = new TaskUI();
 
         taskManager.updateExpiredTasks();
         taskManager.notifyTasks();
+
+        TaskUI ui = new TaskUI(taskManager);
         ui.start();
     }
 }
