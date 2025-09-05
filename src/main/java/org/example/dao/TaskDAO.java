@@ -15,17 +15,19 @@ public class TaskDAO {
     }
 
     private static final String BASE_SELECT =
-            "SELECT id, title, description, endDate, status FROM tasks";
+            "SELECT id, title, description, endDate,repeatIntervalDays, status FROM tasks";
 
     public void save(Task task) {
-        String sql = "INSERT INTO tasks(title, description, endDate, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks(title, description, endDate,repeatIntervalDays, status) VALUES (?, ?, ?,?, ?)";
         try (Connection conn = connection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, task.getTitle());
             ps.setString(2, task.getDescription());
             ps.setDate(3, Date.valueOf(task.getEndDate()));
-            ps.setString(4, task.getStatus().toString());
+            ps.setInt(4, task.getRepeatIntervalDays());
+            ps.setString(5, task.getStatus().toString());
+
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -90,22 +92,34 @@ public class TaskDAO {
     }
 
     public void updateExpiredTasks() {
-        String sql = BASE_SELECT;
         try (Connection conn = connection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(BASE_SELECT)) {
 
             while (rs.next()) {
                 int id = rs.getInt("id");
                 LocalDate endDate = rs.getDate("endDate").toLocalDate();
                 TaskStatus status = TaskStatus.valueOf(rs.getString("status"));
+                int repeatIntervalDays = rs.getInt("repeatIntervalDays");
 
-                if (endDate.isBefore(LocalDate.now()) && status != TaskStatus.DONE) {
-                    String updateSql = "UPDATE tasks SET status = ? WHERE id = ?";
-                    try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                        ps.setString(1, TaskStatus.FAILED.toString());
-                        ps.setInt(2, id);
-                        ps.executeUpdate();
+                if (endDate.isBefore(LocalDate.now())) {
+                    if (status != TaskStatus.DONE && repeatIntervalDays == 0) {
+                        String updateSql = "UPDATE tasks SET status = ? WHERE id = ?";
+                        try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                            ps.setString(1, TaskStatus.FAILED.toString());
+                            ps.setInt(2, id);
+                            ps.executeUpdate();
+                        }
+                    }
+                    if (status == TaskStatus.DONE && repeatIntervalDays > 0) {
+                        String updateSql = "UPDATE tasks SET endDate = ?, status = ?  WHERE id = ?";
+                        try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                            ps.setString(1, endDate.plusDays(repeatIntervalDays).toString());
+                            ps.setString(2, TaskStatus.IN_PROGRESS.toString());
+                            ps.setInt(3, id);
+                            ps.executeUpdate();
+                        }
+
                     }
                 }
             }

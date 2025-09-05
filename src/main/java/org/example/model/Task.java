@@ -15,16 +15,19 @@ public class Task {
     @NotNull(message = "End date is required!")
     @FutureOrPresent
     private LocalDate endDate;
+    @PositiveOrZero
+    private int repeatIntervalDays;
     @NotNull
     private  TaskStatus status;
 
 
     public Task() {}
 
-    public Task(String title, String description, LocalDate endDate, TaskStatus status) {
+    public Task(String title, String description, LocalDate endDate,int repeatIntervalDays, TaskStatus status) {
         this.title = title;
         this.description = description;
         this.endDate = endDate;
+        this.repeatIntervalDays = repeatIntervalDays;
         this.status = status;
     }
 
@@ -58,6 +61,14 @@ public class Task {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public int getRepeatIntervalDays() {
+        return repeatIntervalDays;
+    }
+
+    public void setRepeatIntervalDays(int repeatIntervalDays) {
+        this.repeatIntervalDays = repeatIntervalDays;
     }
 
     public TaskStatus getStatus() {

@@ -23,6 +23,7 @@ public class Database {
                     title TEXT NOT NULL,
                     description TEXT,
                     endDate DATE,
+                    repeatIntervalDays INTEGER,
                     status TEXT
                 );
                 """;

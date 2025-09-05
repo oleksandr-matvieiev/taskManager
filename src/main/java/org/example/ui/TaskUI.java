@@ -1,9 +1,7 @@
 package org.example.ui;
 
-import org.example.dao.TaskDAO;
 import org.example.model.Task;
 import org.example.model.TaskStatus;
-import org.example.service.SwingNotifier;
 import org.example.service.TaskManager;
 
 import java.time.DateTimeException;
@@ -14,9 +12,14 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class TaskUI {
+    private final TaskManager taskManager;
+
+    public TaskUI(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
+
     public void start() {
-        TaskDAO taskDAO = new TaskDAO();
-        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
         Scanner sc = new Scanner(System.in);
 
         SystemPrinter.success("Welcome to Task Manager. Please enter the option:");
@@ -38,8 +41,23 @@ public class TaskUI {
                         SystemPrinter.info("Write description:");
                         String description = sc.nextLine();
                         SystemPrinter.info("Write date (Format dd-MM-yyyy or ddMMyyyy )");
-                        LocalDate date = formatDate(sc.next());
-                        taskManager.save(new Task(title, description, date, TaskStatus.IN_PROGRESS));
+                        LocalDate date = formatDate(sc.nextLine());
+
+                        SystemPrinter.info("""
+                                Do you want to make this task repeatable?
+                                1. Yes
+                                2. No""");
+
+                        int interval = 0;
+                        int repeatChoice = sc.nextInt();
+                        sc.nextLine();
+
+                        if (repeatChoice == 1) {
+                            SystemPrinter.info("Which interval? (Days)");
+                            interval = sc.nextInt();
+                            sc.nextLine();
+                        }
+                        taskManager.save(new Task(title, description, date, interval, TaskStatus.IN_PROGRESS));
 
                         SystemPrinter.success("Task added successfully!");
                     } catch (DateTimeException e) {
