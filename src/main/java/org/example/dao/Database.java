@@ -17,21 +17,32 @@ public class Database {
     }
 
     public static void createTables() {
-        String sql = """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    description TEXT,
-                    endDate DATE,
-                    repeatIntervalDays INTEGER,
-                    status TEXT
-                );
-                """;
+        String[] sqlStatements = {
+                "CREATE TABLE IF NOT EXISTS tasks (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "title TEXT NOT NULL," +
+                        "description TEXT," +
+                        "endDate DATE," +
+                        "repeatIntervalDays INTEGER," +
+                        "status TEXT," +
+                        "tag_id INTEGER," +
+                        "FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL" +
+                        ");",
+                "CREATE TABLE IF NOT EXISTS tags (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "name TEXT NOT NULL UNIQUE" +
+                        ");",
+                "INSERT INTO tags (id, name) VALUES (1, 'Uncategorized')" +
+                        "ON CONFLICT(id) DO NOTHING;"
+        };
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-        } catch (SQLException e) {
+            for (String s : sqlStatements) {
+                stmt.executeUpdate(s);
+            }
+        }
+        catch (SQLException e) {
             throw new RuntimeException("Failed to create tables", e);
         }
     }
