@@ -1,5 +1,6 @@
 package org.example.ui;
 
+import org.example.util.DateUtils;
 import org.example.model.Task;
 import org.example.model.TaskStatus;
 import org.example.service.TaskManager;
@@ -41,7 +42,7 @@ public class TaskUI {
                         SystemPrinter.info("Write description:");
                         String description = sc.nextLine();
                         SystemPrinter.info("Write date (Format dd-MM-yyyy or ddMMyyyy )");
-                        LocalDate date = formatDate(sc.nextLine());
+                        LocalDate date = DateUtils.parseDate(sc.nextLine());
 
                         SystemPrinter.info("""
                                 Do you want to make this task repeatable?
