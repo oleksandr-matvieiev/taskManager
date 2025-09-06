@@ -30,7 +30,7 @@ public class TaskUI {
             SystemPrinter.info("2. Remove task");
             SystemPrinter.info("3. Mark task as completed");
             SystemPrinter.info("4. View all tasks");
-            SystemPrinter.info("5. View tasks by status");
+            SystemPrinter.info("5. Filters");
             SystemPrinter.info("9. Settings");
             SystemPrinter.info("0. Exit ");
 
@@ -40,7 +40,7 @@ public class TaskUI {
                 case 2 -> removeTask();
                 case 3 -> completeTask();
                 case 4 -> viewAllTasks();
-                case 5 -> viewByStatus();
+                case 5 -> filtersMenu();
                 case 9 -> settingsMenu();
                 case 0 -> exit();
                 default -> SystemPrinter.warn("Wrong number of option!");
@@ -99,7 +99,30 @@ public class TaskUI {
         }
     }
 
-    private void viewByStatus() {
+    private void filtersMenu() {
+        boolean running = true;
+
+        while (running) {
+            SystemPrinter.info("--- Filters Menu ---");
+            SystemPrinter.info("1. By status");
+            SystemPrinter.info("2. By tag");
+            SystemPrinter.info("3. By deadline");
+            SystemPrinter.info("4. By keyword");
+            SystemPrinter.info("0. Exit ");
+
+            int choice = readInt("Choose option: ");
+            switch (choice) {
+                case 1 -> filterByStatus();
+                case 2 -> filterByTag();
+                case 3 -> filterByDeadline();
+                case 4 -> filterByKeyword();
+
+                case 0 -> running = false;
+            }
+        }
+    }
+
+    private void filterByStatus() {
         SystemPrinter.info("Enter number of status for filter");
         SystemPrinter.info("1. Failed");
         SystemPrinter.info("2. In Progress");
@@ -123,6 +146,51 @@ public class TaskUI {
             TaskPrinter.printTasks(tasks);
         }
     }
+
+    private void filterByTag() {
+        List<Tag> tags = tagManager.findAll();
+        if (tags.isEmpty()) {
+            SystemPrinter.info("No tags found.");
+            return;
+        }
+
+        Map<Integer, Integer> tagMap = TagPrinter.printTags(tags);
+        int choice = readInt("Choose tag: ");
+        Integer tagId = tagMap.get(choice);
+
+        if (tagId == null) {
+            SystemPrinter.warn("Wrong tag id!");
+            return;
+        }
+
+        List<Task> tasks = taskManager.findAll().stream()
+                .filter(t -> t.getTag() != null && t.getTag().getId().equals(tagId))
+                .toList();
+
+        if (tasks.isEmpty()) SystemPrinter.info("No tasks with tag " + tagId);
+        else TaskPrinter.printTasks(tasks);
+    }
+
+    private void filterByKeyword() {
+        String keyword = readLine("Enter keyword: ").toLowerCase();
+        List<Task> tasks = taskManager.findAll().stream()
+                .filter(t -> (t.getTitle() != null && t.getTitle().toLowerCase().contains(keyword)) ||
+                        (t.getDescription() != null && t.getDescription().toLowerCase().contains(keyword)))
+                .toList();
+        if (tasks.isEmpty()) SystemPrinter.info("No tasks with keyword " + keyword);
+        else TaskPrinter.printTasks(tasks);
+    }
+
+    private void filterByDeadline() {
+        LocalDate date = DateUtils.parseDate(readLine("Enter deadline date: "));
+        List<Task> tasks = taskManager.findAll().stream()
+                .filter(t -> t.getEndDate() != null && t.getEndDate().isEqual(date))
+                .toList();
+
+        if (tasks.isEmpty()) SystemPrinter.info("No tasks with deadline date " + date);
+        else TaskPrinter.printTasks(tasks);
+    }
+
 
     private void exit() {
         SystemPrinter.success("Bye");
