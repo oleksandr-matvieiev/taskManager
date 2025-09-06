@@ -19,11 +19,12 @@ public class TaskPrinter {
      * that links row numbers (as shown to the user) to real task IDs.
      */
     public static Map<Integer, Integer> printTasks(List<Task> tasks) {
+
         Map<Integer, Integer> rowToId = new HashMap<>();
 
-        String separator = "+----+--------------------------------+----------------------------------------------------+------------+--------------+\n";
-        String header = String.format("| %-2s | %-30s | %-50s | %-10s | %-12s |\n",
-                "№", "Title", "Description", "End Date", "Status");
+        String separator = "+----+--------------------------------+----------------------------------------------------+------------+----------+--------------+\n";
+        String header = String.format("| %-2s | %-30s | %-50s | %-10s | %-10s | %-12s |\n",
+                "№", "Title", "Description", "End Date", "Tag", "Status");
 
         System.out.print(separator);
         System.out.print(header);
@@ -41,11 +42,12 @@ public class TaskPrinter {
                     ? ConsoleColor.RED.wrap(task.getEndDate().format(FORMATTER))
                     : ConsoleColor.CYAN.wrap(task.getEndDate() != null ? task.getEndDate().format(FORMATTER) : "");
 
-            String row = String.format("| %-2d | %-30s | %-50s | %-10s | %-12s |\n",
+            String row = String.format("| %-2d | %-30s | %-50s | %-10s | %-10s | %-12s |\n",
                     rowNumber,
                     task.getTitle() != null ? task.getTitle() : "",
                     task.getDescription() != null ? task.getDescription() : "",
                     dateColored,
+                    task.getTag() != null ? task.getTag().getName() : "Uncategorized",
                     statusColored
             );
 

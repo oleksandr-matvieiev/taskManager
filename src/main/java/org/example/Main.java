@@ -1,8 +1,10 @@
 package org.example;
 
 import org.example.dao.Database;
+import org.example.dao.TagDAO;
 import org.example.dao.TaskDAO;
 import org.example.service.SwingNotifier;
+import org.example.service.TagManager;
 import org.example.service.TaskManager;
 import org.example.ui.TaskUI;
 
@@ -12,12 +14,14 @@ public class Main {
     public static void main(String[] args) {
         Database.createTables();
         TaskDAO taskDAO = new TaskDAO();
+        TagDAO tagDAO = new TagDAO();
+        TagManager tagManager=new TagManager(tagDAO);
         TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
 
         taskManager.updateExpiredTasks();
         taskManager.notifyTasks();
 
-        TaskUI ui = new TaskUI(taskManager);
+        TaskUI ui = new TaskUI(taskManager,tagManager);
         ui.start();
     }
 }
