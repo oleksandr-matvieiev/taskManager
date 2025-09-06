@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.model.Tag;
 import org.example.model.Task;
 import org.example.model.TaskStatus;
 
@@ -15,10 +16,14 @@ public class TaskDAO {
     }
 
     private static final String BASE_SELECT =
-            "SELECT id, title, description, endDate,repeatIntervalDays, status FROM tasks";
+            "SELECT t.id, t.title, t.description, t.endDate, " +
+                    "t.repeatIntervalDays, t.status, t.tag_id, tg.name AS tag_name " +
+                    "FROM tasks t " +
+                    "LEFT JOIN tags tg ON t.tag_id = tg.id";
+
 
     public void save(Task task) {
-        String sql = "INSERT INTO tasks(title, description, endDate,repeatIntervalDays, status) VALUES (?, ?, ?,?, ?)";
+        String sql = "INSERT INTO tasks(title, description, endDate,repeatIntervalDays , status, tag_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = connection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -27,6 +32,7 @@ public class TaskDAO {
             ps.setDate(3, Date.valueOf(task.getEndDate()));
             ps.setInt(4, task.getRepeatIntervalDays());
             ps.setString(5, task.getStatus().toString());
+            ps.setInt(6, task.getTag().getId());
 
             ps.executeUpdate();
 
@@ -137,6 +143,12 @@ public class TaskDAO {
             task.setDescription(rs.getString("description"));
             task.setEndDate(rs.getDate("endDate").toLocalDate());
             task.setStatus(TaskStatus.valueOf(rs.getString("status")));
+
+            Tag tag = new Tag();
+            tag.setId(rs.getInt("tag_id"));
+            tag.setName(rs.getString("tag_name"));
+            task.setTag(tag);
+
             taskList.add(task);
         }
     }
