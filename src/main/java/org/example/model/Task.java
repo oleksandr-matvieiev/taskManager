@@ -19,16 +19,19 @@ public class Task {
     private int repeatIntervalDays;
     @NotNull
     private  TaskStatus status;
+    @NotNull
+    private Tag tag;
 
 
     public Task() {}
 
-    public Task(String title, String description, LocalDate endDate,int repeatIntervalDays, TaskStatus status) {
+    public Task(String title, String description, LocalDate endDate,int repeatIntervalDays, TaskStatus status, Tag tag) {
         this.title = title;
         this.description = description;
         this.endDate = endDate;
         this.repeatIntervalDays = repeatIntervalDays;
         this.status = status;
+        this.tag = tag;
     }
 
     public int getId() {
@@ -79,4 +82,11 @@ public class Task {
         this.status = status;
     }
 
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
 }
