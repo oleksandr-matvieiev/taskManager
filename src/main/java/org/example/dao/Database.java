@@ -1,17 +1,23 @@
 package org.example.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
+    private static final Logger log = LoggerFactory.getLogger(Database.class);
     private static final String URL = "jdbc:sqlite:taskmanager.db";
 
     public static Connection connect() {
         try {
+            log.debug("Connecting to database: {}", URL);
             return DriverManager.getConnection(URL);
         } catch (SQLException e) {
+            log.error("Cannot connect to database: {}", URL, e);
             throw new RuntimeException("Cannot connect to DB", e);
         }
     }
@@ -41,8 +47,10 @@ public class Database {
             for (String s : sqlStatements) {
                 stmt.executeUpdate(s);
             }
+            log.info("Database tables created successfully");
         }
         catch (SQLException e) {
+            log.error("Cannot create tables: {}", URL, e);
             throw new RuntimeException("Failed to create tables", e);
         }
     }
