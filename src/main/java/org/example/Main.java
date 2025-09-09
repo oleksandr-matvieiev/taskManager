@@ -17,7 +17,8 @@ public class Main {
         TaskDAO taskDAO = new TaskDAO();
         TagDAO tagDAO = new TagDAO();
         TagManager tagManager = new TagManager(tagDAO);
-        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()),appConfig);
+        DeletedTaskArchiveService deletedTaskArchiveService = new DeletedTaskArchiveService();
+        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()),appConfig, deletedTaskArchiveService);
         ExportService exportService = new ExportService(taskManager, appConfig);
 
         taskManager.updateExpiredTasks();
