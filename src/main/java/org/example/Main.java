@@ -17,13 +17,13 @@ public class Main {
         TaskDAO taskDAO = new TaskDAO();
         TagDAO tagDAO = new TagDAO();
         TagManager tagManager = new TagManager(tagDAO);
-        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()));
+        TaskManager taskManager = new TaskManager(taskDAO, List.of(new SwingNotifier()),appConfig);
         ExportService exportService = new ExportService(taskManager, appConfig);
 
         taskManager.updateExpiredTasks();
         taskManager.notifyTasks();
 
-        TaskUI ui = new TaskUI(taskManager, tagManager, exportService);
+        TaskUI ui = new TaskUI(taskManager, tagManager, exportService, appConfig);
         ui.start();
     }
 }

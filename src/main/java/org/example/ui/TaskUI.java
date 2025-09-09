@@ -1,5 +1,6 @@
 package org.example.ui;
 
+import org.example.service.AppConfig;
 import org.example.service.ExportService;
 import org.example.service.TaskManager;
 import org.example.service.TagManager;
@@ -14,10 +15,10 @@ public class TaskUI {
     private final FilterMenu filterMenu;
     private final SettingsMenu settingsMenu;
 
-    public TaskUI(TaskManager taskManager, TagManager tagManager, ExportService exportService) {
+    public TaskUI(TaskManager taskManager, TagManager tagManager, ExportService exportService, AppConfig appConfig) {
         this.taskMenu = new TaskMenu(taskManager, tagManager, sc);
         this.filterMenu = new FilterMenu(taskManager, tagManager, sc);
-        this.settingsMenu = new SettingsMenu(tagManager,exportService, sc);
+        this.settingsMenu = new SettingsMenu(tagManager,exportService,appConfig, sc);
     }
 
     public void start() {
