@@ -19,17 +19,19 @@ public class ExportService {
     private static final Logger log = LoggerFactory.getLogger(ExportService.class);
 
     private final TaskManager taskManager;
-    private String exportDir = System.getProperty("user.home") + "/Downloads/";
+    private final AppConfig appConfig;
+//    private String exportDir = System.getProperty("user.home") + "/Downloads/";
 
-    public ExportService(TaskManager taskManager) {
+    public ExportService(TaskManager taskManager, AppConfig appConfig) {
         this.taskManager = taskManager;
+        this.appConfig = appConfig;
     }
 
     public void exportToCsv() {
         List<Task> tasks = taskManager.findAll();
         Map<Integer, Task> numberedTasks = TaskUtils.enumerateTasks(tasks);
 
-        String filePath = this.exportDir + "tasks.csv";
+        String filePath = appConfig.getExportDir() + "tasks.csv";
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(filePath))) {
             writer.writeNext(new String[]{"Num", "Title", "Description", "EndDate", "Status", "Tag"});
@@ -55,7 +57,7 @@ public class ExportService {
 
     public void exportToJson() {
         List<Task> tasks = taskManager.findAll();
-        String filePath = this.exportDir + "tasks.json";
+        String filePath = appConfig.getExportDir() + "tasks.json";
 
         try {
             ObjectWriter writer = new ObjectMapper().writerWithDefaultPrettyPrinter();
@@ -74,15 +76,11 @@ public class ExportService {
     }
 
     public void changeExportDir(String newExportDir) {
-        if (newExportDir == null || newExportDir.isBlank()) {
-            this.exportDir = System.getProperty("user.home") + "/Downloads/";
-        } else {
-            this.exportDir = newExportDir.endsWith("/") ? newExportDir : newExportDir + "/";
-        }
+        appConfig.changeExportDir(newExportDir);
     }
 
     public String getExportDir() {
-        return exportDir;
+        return appConfig.getExportDir();
     }
 
 
