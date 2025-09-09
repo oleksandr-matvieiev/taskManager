@@ -1,6 +1,7 @@
 package org.example.ui;
 
 import org.example.model.Tag;
+import org.example.service.AppConfig;
 import org.example.service.ExportService;
 import org.example.service.TagManager;
 
@@ -12,11 +13,13 @@ public class SettingsMenu {
     private final TagManager tagManager;
     private final ExportService exportService;
     private final Scanner sc;
+    private final AppConfig appConfig;
 
-    public SettingsMenu(TagManager tagManager, ExportService exportService, Scanner sc) {
+    public SettingsMenu(TagManager tagManager, ExportService exportService, AppConfig appConfig, Scanner sc) {
         this.tagManager = tagManager;
         this.exportService = exportService;
         this.sc = sc;
+        this.appConfig = appConfig;
     }
 
     public void start() {
@@ -26,6 +29,9 @@ public class SettingsMenu {
             SystemPrinter.info("1. Delete tag");
             SystemPrinter.info("2. Export to csv");
             SystemPrinter.info("3. Export to json");
+            SystemPrinter.info("4. Change default dir ");
+            SystemPrinter.info("5. Change days after delete task");
+
             SystemPrinter.info("0. Back");
 
             int choice = readInt("Choose option: ");
@@ -34,6 +40,7 @@ public class SettingsMenu {
                 case 2 -> exportToCsv();
                 case 3 -> exportToJson();
                 case 4 -> changeExportDir();
+                case 5 -> changeDaysAfterDeleteDone();
                 case 0 -> running = false;
                 default -> SystemPrinter.warn("Wrong option!");
             }
@@ -92,6 +99,19 @@ public class SettingsMenu {
         }
     }
 
+    private void changeDaysAfterDeleteDone() {
+        SystemPrinter.info("Current days before delete task with status: DONE - " + appConfig.getDeleteDoneAfterDays());
+
+        Integer newDaysAfterDeleteDone = readInt("Enter new value: ");
+
+        try {
+            appConfig.changeDeleteDoneAfterDays(newDaysAfterDeleteDone);
+            SystemPrinter.success("Days after delete task changed to: " + appConfig.getDeleteDoneAfterDays());
+        }catch (Exception e) {
+            SystemPrinter.error("Failed to change days after delete task: " + e.getMessage());
+        }
+    }
+
 
     private int readInt(String message) {
         while (true) {
@@ -103,12 +123,13 @@ public class SettingsMenu {
             }
         }
     }
+
     private String readString(String message) {
         while (true) {
             try {
                 SystemPrinter.info(message);
                 return sc.nextLine().trim();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 SystemPrinter.warn("Please enter a valid text!");
             }
         }
