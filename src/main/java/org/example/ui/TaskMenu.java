@@ -81,7 +81,7 @@ public class TaskMenu {
         List<Task> tasks = taskManager.findAll();
         Integer id = chooseTaskId(tasks, "Enter number of task you want to remove:");
         if (id != null) {
-            taskManager.deleteById(id);
+            taskManager.deleteTaskWithArchive(id);
             SystemPrinter.success("Task removed");
         }
     }
