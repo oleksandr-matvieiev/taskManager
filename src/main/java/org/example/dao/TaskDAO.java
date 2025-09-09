@@ -112,70 +112,14 @@ public class TaskDAO {
         }
     }
 
-    public void markAsDone(int id) {
-        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
-        try (Connection conn = connection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, TaskStatus.DONE.toString());
-            ps.setInt(2, id);
-            ps.executeUpdate();
-            log.info("Task marked as done: {}", id);
-        } catch (SQLException e) {
-            log.error("Error marking task as done {}", id, e);
-            throw new RuntimeException("Failed to mark task as done", e);
-        }
-    }
-
-    // --- Update expired tasks with optional deletion of old DONE tasks ---
-    public void updateExpiredTasks(int daysAfterDelete) {
-        try (Connection conn = connection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(BASE_SELECT)) {
-
-            while (rs.next()) {
-                Task task = mapTaskFromResultSet(rs);
-
-                if (isTaskExpired(task)) {
-                    if (task.getStatus() != TaskStatus.DONE && task.getRepeatIntervalDays() == 0) {
-                        markTaskAsFailed(conn, task.getId());
-                    }
-
-                    if (task.getStatus() == TaskStatus.DONE) {
-                        if (task.getRepeatIntervalDays() > 0) {
-                            moveRecurringTask(conn, task.getId(), task.getEndDate().plusDays(task.getRepeatIntervalDays()));
-                        } else if (task.getEndDate().plusDays(daysAfterDelete).isBefore(LocalDate.now())) {
-                            deleteTask(conn, task);
-                        }
-                    }
-                }
-            }
-
-        } catch (SQLException e) {
-            log.error("Error updating expired tasks", e);
-            throw new RuntimeException("Failed to update expired tasks", e);
-        }
-    }
-
-    // --- Helper methods ---
-
-    private boolean isTaskExpired(Task task) {
+    public boolean isTaskExpired(Task task) {
         return task.getEndDate().isBefore(LocalDate.now());
     }
 
-    private void markTaskAsFailed(Connection conn, int taskId) throws SQLException {
-        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, TaskStatus.FAILED.toString());
-            ps.setInt(2, taskId);
-            ps.executeUpdate();
-            log.info("Task {} expired and marked as FAILED", taskId);
-        }
-    }
-
-    private void moveRecurringTask(Connection conn, int taskId, LocalDate newEndDate) throws SQLException {
+    public void moveRecurringTask(int taskId, LocalDate newEndDate) throws SQLException {
         String sql = "UPDATE tasks SET endDate = ?, status = ? WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, newEndDate.toString());
             ps.setString(2, TaskStatus.IN_PROGRESS.toString());
             ps.setInt(3, taskId);
@@ -184,16 +128,7 @@ public class TaskDAO {
         }
     }
 
-    private void deleteTask(Connection conn, Task task) throws SQLException {
-        String sql = "DELETE FROM tasks WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, task.getId());
-            ps.executeUpdate();
-            log.info("Task {} DONE older than retention period deleted", task.getId());
-        }
-    }
-
-    private Task mapTaskFromResultSet(ResultSet rs) throws SQLException {
+    public Task mapTaskFromResultSet(ResultSet rs) throws SQLException {
         Task task = new Task();
         task.setId(rs.getInt("id"));
         task.setTitle(rs.getString("title"));
@@ -211,6 +146,24 @@ public class TaskDAO {
         task.setTag(tag);
 
         return task;
+    }
+
+    public void markAsDone(int id) throws SQLException {
+        updateTaskStatus(id, TaskStatus.DONE);
+    }
+
+    public void markTaskAsFailed(int id) throws SQLException {
+        updateTaskStatus(id, TaskStatus.FAILED);
+    }
+
+    private void updateTaskStatus(int taskId, TaskStatus status) throws SQLException {
+        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
+        try (Connection conn = connection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status.toString());
+            ps.setInt(2, taskId);
+            ps.executeUpdate();
+        }
     }
 
     private void mapTasksFromDB(List<Task> taskList, ResultSet rs) throws SQLException {
