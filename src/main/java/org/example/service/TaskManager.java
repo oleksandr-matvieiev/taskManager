@@ -19,10 +19,12 @@ public class TaskManager {
     private static final Validator VALIDATOR =
             Validation.buildDefaultValidatorFactory().getValidator();
     private final List<TaskNotifier> taskNotifiers;
+    private final AppConfig appConfig;
 
-    public TaskManager(TaskDAO taskDAO, List<TaskNotifier> taskNotifiers) {
+    public TaskManager(TaskDAO taskDAO, List<TaskNotifier> taskNotifiers, AppConfig appConfig) {
         this.taskNotifiers = taskNotifiers;
         this.taskDAO = taskDAO;
+        this.appConfig = appConfig;
     }
 
 
@@ -66,6 +68,6 @@ public class TaskManager {
     }
 
     public void updateExpiredTasks() {
-        taskDAO.updateExpiredTasks();
+        taskDAO.updateExpiredTasks(appConfig.getDeleteDoneAfterDays());
     }
 }
