@@ -116,7 +116,7 @@ public class TaskDAO {
         return task.getEndDate().isBefore(LocalDate.now());
     }
 
-    public void moveRecurringTask(int taskId, LocalDate newEndDate) throws SQLException {
+    public void moveRecurringTask(int taskId, LocalDate newEndDate)  {
         String sql = "UPDATE tasks SET endDate = ?, status = ? WHERE id = ?";
         try (Connection conn = connection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -125,6 +125,9 @@ public class TaskDAO {
             ps.setInt(3, taskId);
             ps.executeUpdate();
             log.info("Recurring task {} moved to next interval", taskId);
+        }catch (SQLException e){
+            log.error("Error while moving task {} to next interval", taskId, e);
+            throw new RuntimeException("Failed to move task", e);
         }
     }
 
@@ -148,21 +151,24 @@ public class TaskDAO {
         return task;
     }
 
-    public void markAsDone(int id) throws SQLException {
+    public void markAsDone(int id)  {
         updateTaskStatus(id, TaskStatus.DONE);
     }
 
-    public void markTaskAsFailed(int id) throws SQLException {
+    public void markTaskAsFailed(int id)  {
         updateTaskStatus(id, TaskStatus.FAILED);
     }
 
-    private void updateTaskStatus(int taskId, TaskStatus status) throws SQLException {
+    private void updateTaskStatus(int taskId, TaskStatus status)  {
         String sql = "UPDATE tasks SET status = ? WHERE id = ?";
         try (Connection conn = connection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status.toString());
             ps.setInt(2, taskId);
             ps.executeUpdate();
+        }catch (SQLException e){
+            log.error("Error updating task status", e);
+            throw new RuntimeException("Error updating task status", e);
         }
     }
 

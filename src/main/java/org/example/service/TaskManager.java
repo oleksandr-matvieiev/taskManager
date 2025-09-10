@@ -9,7 +9,6 @@ import org.example.model.TaskStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class TaskManager {
     public void save(Task task) {
         var violations = VALIDATOR.validate(task);
         if (!violations.isEmpty()) {
-            violations.forEach(v->log.warn("Validation error: {}",v.getMessage()));
+            violations.forEach(v -> log.warn("Validation error: {}", v.getMessage()));
             return;
         }
         taskDAO.save(task);
@@ -47,13 +46,14 @@ public class TaskManager {
 
     public void deleteTaskWithArchive(Integer id) {
         if (id == null) {
+            log.error("Task id is null");
             throw new IllegalArgumentException("Task ID cannot be null");
         }
 
         Task task = taskDAO.findById(id);
         if (task == null) {
             log.warn("Task {} not found for deletion", id);
-            return;
+            throw new IllegalArgumentException("Task ID not found for deletion");
         }
 
         deletedTaskArchiveService.archiveTask(task);
@@ -67,12 +67,8 @@ public class TaskManager {
         if (id == null) {
             throw new IllegalArgumentException("Task ID cannot be null");
         }
-        try {
-            taskDAO.markAsDone(id);
-            log.info("Task {} marked as done", id);
-        } catch (SQLException e) {
-            log.error("Failed to mark task {} as done", id, e);
-        }
+        taskDAO.markAsDone(id);
+        log.info("Task {} marked as done", id);
 
     }
 
@@ -100,19 +96,16 @@ public class TaskManager {
 
     private void handleExpiredTask(Task task, int retentionDays) {
         if (task.getStatus() != TaskStatus.DONE && task.getRepeatIntervalDays() == 0) {
-            try {
-                taskDAO.markTaskAsFailed(task.getId());
-            } catch (SQLException e) {
-                log.warn("Task {} marked as failed", task.getId());
-            }
+            taskDAO.markTaskAsFailed(task.getId());
+
+            log.info("Task {} marked as failed", task.getId());
         } else if (task.getStatus() == TaskStatus.DONE) {
             if (task.getRepeatIntervalDays() > 0) {
-                try {
-                    taskDAO.moveRecurringTask(task.getId(), task.getEndDate().plusDays(task.getRepeatIntervalDays()));
-                } catch (SQLException e) {
-                    log.warn("Task {} become new deadline", task.getId() );
-                }
+
+                taskDAO.moveRecurringTask(task.getId(), task.getEndDate().plusDays(task.getRepeatIntervalDays()));
+                log.warn("Task {} become new deadline", task.getId());
             } else if (task.getEndDate().plusDays(retentionDays).isBefore(LocalDate.now())) {
+
                 deletedTaskArchiveService.archiveTask(task);
                 taskDAO.deleteById(task.getId());
             }
