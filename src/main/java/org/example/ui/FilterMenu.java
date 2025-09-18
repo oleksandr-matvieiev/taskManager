@@ -50,7 +50,7 @@ public class FilterMenu {
         SystemPrinter.info("2. In Progress");
         SystemPrinter.info("3. Done");
 
-        int choice = readInt("Choose: ");
+        int choice = readInt("Choose option: ");
         TaskStatus status = switch (choice) {
             case 1 -> TaskStatus.FAILED;
             case 2 -> TaskStatus.IN_PROGRESS;

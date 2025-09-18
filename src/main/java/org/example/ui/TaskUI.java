@@ -31,7 +31,6 @@ public class TaskUI {
             SystemPrinter.info("9. Settings");
             SystemPrinter.info("0. Exit ");
 
-            SystemPrinter.info("Please enter your option:");
             int choice = readInt();
             switch (choice) {
                 case 1 -> taskMenu.start();
