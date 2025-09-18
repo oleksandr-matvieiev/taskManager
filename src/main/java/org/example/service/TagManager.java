@@ -17,6 +17,7 @@ public class TagManager {
     private static final Validator VALIDATOR =
             Validation.buildDefaultValidatorFactory().getValidator();
 
+    private static final int DEFAULT_TAG_ID = 1;
 
     public TagManager(TagDAO tagDAO) {
         this.tagDAO = tagDAO;
@@ -25,7 +26,7 @@ public class TagManager {
     public Tag save(Tag tag) {
         var valid = VALIDATOR.validate(tag);
         if (!valid.isEmpty()) {
-            valid.forEach(v->log.warn("Validation error: {}",v.getMessage()));
+            valid.forEach(v -> log.warn("Validation error: {}", v.getMessage()));
             return null;
         }
         return tagDAO.save(tag);
@@ -35,10 +36,14 @@ public class TagManager {
     public List<Tag> findAll() {
         return tagDAO.findAll();
     }
+
     public void deleteById(Integer id) {
-        if (id==null){
+        if (id == null) {
             throw new IllegalArgumentException("Tag id cannot be null!");
+        } else if (id.equals(DEFAULT_TAG_ID)) {
+            throw new IllegalArgumentException("Default tag cannot be deleted");
         }
+
         tagDAO.deleteById(id);
     }
 }
