@@ -15,14 +15,6 @@ public class AppConfig {
     private String exportDir = System.getProperty("user.home") + "/Downloads/";
     private Integer deleteDoneAfterDays = 0;
 
-    private void setExportDirInternal(String exportDir) {
-        this.exportDir = exportDir;
-    }
-
-    private void setDeleteDoneAfterDaysInternal(Integer days) {
-        this.deleteDoneAfterDays = days;
-    }
-
     public void changeExportDir(String exportDir) {
         if (exportDir == null || exportDir.isBlank()) {
             this.exportDir = System.getProperty("user.home") + "/Downloads/";

@@ -20,7 +20,6 @@ public class ExportService {
 
     private final TaskManager taskManager;
     private final AppConfig appConfig;
-//    private String exportDir = System.getProperty("user.home") + "/Downloads/";
 
     public ExportService(TaskManager taskManager, AppConfig appConfig) {
         this.taskManager = taskManager;
