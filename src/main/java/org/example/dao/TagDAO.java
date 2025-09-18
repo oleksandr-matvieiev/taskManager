@@ -53,35 +53,41 @@ public class TagDAO {
         }
         return tags;
     }
-    public void deleteById(int id){
-        if (id == 1) {
-            throw new IllegalArgumentException("Default tag cannot be deleted");
-        }
 
+    public void deleteById(int id) {
         String reassignSql = "UPDATE tasks SET tag_id = 1 WHERE tag_id = ?";
-        try (Connection connection = connection();
-             PreparedStatement reassignStmt = connection.prepareStatement(reassignSql)) {
-            reassignStmt.setInt(1, id);
-            reassignStmt.executeUpdate();
-            log.info("Reassigned tasks from tag {}", id);
-        } catch (SQLException e) {
-            log.error("Error while reassigning tag {}", id, e);
-            throw new RuntimeException("Failed to reassign tasks before tag deletion", e);
-        }
+        String deleteSql = "DELETE FROM tags WHERE id = ?";
 
+        try (Connection connection = connection()) {
+            connection.setAutoCommit(false);
 
-        String sql = "DELETE FROM tags WHERE id = ?";
-        try (Connection connection=connection();
-        PreparedStatement preparedStatement=connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+            try (PreparedStatement reassignStmt = connection.prepareStatement(reassignSql);
+                 PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
 
-            log.info("Deleted tag {}", id);
+                // reassignment
+                reassignStmt.setInt(1, id);
+                reassignStmt.executeUpdate();
+                log.info("Reassigned tasks from tag {}", id);
+
+                // delete
+                deleteStmt.setInt(1, id);
+                deleteStmt.executeUpdate();
+                log.info("Deleted tag {}", id);
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                log.error("Transaction failed while deleting tag {}", id, e);
+                throw new RuntimeException("Failed to delete tag with reassignment", e);
+            } finally {
+                connection.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             log.error("Error while deleting tag {}", id, e);
-            throw new RuntimeException("Failed to delete tag: ", e);
+            throw new RuntimeException("Failed to delete tag", e);
         }
     }
+
 
     private void mapTagsFromDB(List<Tag> tags, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
