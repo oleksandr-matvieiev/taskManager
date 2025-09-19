@@ -127,7 +127,7 @@ Run unit tests using Maven:
 mvn test
 ```
 
-Tests cover core functionality of `TagManager` and `TaskManager`.
+Tests cover core functionality of `TagManager`, `TaskManager` and `ExportService`.
 
 ---
 
