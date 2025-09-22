@@ -2,13 +2,10 @@ package org.example.ui;
 
 import org.example.model.Tag;
 import org.example.model.Task;
-import org.example.model.TaskStatus;
+import org.example.service.TaskFactory;
 import org.example.service.TaskManager;
 import org.example.service.TagManager;
-import org.example.util.DateUtils;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -54,28 +51,13 @@ public class TaskMenu {
     }
 
     private void addTask() {
-        try {
-            String title = readLine("Write title:");
-            String description = readLine("Write description:");
-            LocalDate date = DateUtils.parseDate(readLine("Write date (Format dd-MM-yyyy or ddMMyyyy )"));
-
-            int interval = 0;
-            SystemPrinter.info("""
-                    Do you want to make this task repeatable?
-                    1. Yes
-                    2. No""");
-            int repeatChoice = readInt("Your choice: ");
-            if (repeatChoice == 1) {
-                interval = readInt("Which interval? (Days): ");
-            }
-
-            Tag chosenTag = chooseTag();
-            taskManager.save(new Task(title, description, date, interval, TaskStatus.IN_PROGRESS, chosenTag));
-            SystemPrinter.success("Task added successfully!");
-        } catch (DateTimeException e) {
-            SystemPrinter.warn("Invalid date format: " + e.getMessage());
-        }
+        Tag chosenTag = chooseTag();
+        TaskFactory factory = new TaskFactory(sc);
+        Task task = factory.createTask(chosenTag);
+        taskManager.save(task);
+        SystemPrinter.success("Task added successfully!");
     }
+
 
     private void removeTask() {
         List<Task> tasks = taskManager.findAll();
@@ -130,8 +112,16 @@ public class TaskMenu {
             return null;
         }
         Map<Integer, Integer> map = TaskPrinter.printTasks(tasks);
-        int number = readInt(prompt);
-        return map.get(number);
+
+        while (true) {
+            int number = readInt(prompt);
+
+            if (map.containsKey(number)) {
+                return map.get(number);
+            } else {
+                SystemPrinter.warn("Wrong choice. Please try again.");
+            }
+        }
     }
 
     private int readInt(String message) {
