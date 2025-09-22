@@ -87,6 +87,10 @@ src/main/resources/
 ```
 src/test/java/
 │
+├─ ExportServiceTest.java
+│
+├─ SwingNotifierTest.java
+│
 ├─ TagManagerTest.java
 │
 └─ TaskManagerTest.java
@@ -127,7 +131,7 @@ Run unit tests using Maven:
 mvn test
 ```
 
-Tests cover core functionality of `TagManager`, `TaskManager` and `ExportService`.
+Tests cover core functionality of `TagManager`, `TaskManager`, `SwingNotifier` and `ExportService`.
 
 ---
 
