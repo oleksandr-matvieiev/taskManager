@@ -55,6 +55,7 @@ src/main/java/org/example/
 │  ├─ ExportService.java
 │  ├─ SwingNotifier.java
 │  ├─ TagManager.java
+│  ├─ TaskFactory.java
 │  ├─ TaskManager.java
 │  └─ interface TaskNotifier.java
 │
