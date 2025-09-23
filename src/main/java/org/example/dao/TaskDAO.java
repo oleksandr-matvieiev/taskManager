@@ -47,6 +47,23 @@ public class TaskDAO {
         }
     }
 
+    public void update(Task task) {
+        String sql = "UPDATE tasks SET title = ?, description = ?, repeatIntervalDays = ?, endDate = ?, tag_id = ? WHERE id = ?";
+        try (Connection connection = connection();
+        PreparedStatement ps = connection.prepareStatement(sql)){
+
+            ps.setString(1, task.getTitle());
+            ps.setString(2, task.getDescription());
+            ps.setInt(3, task.getRepeatIntervalDays());
+            ps.setString(4, task.getEndDate().toString());
+            ps.setInt(5, task.getTag().getId());
+            ps.setInt(6, task.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Task findById(int id) {
         String sql = BASE_SELECT + " WHERE t.id = ?";
         try (Connection conn = connection();
