@@ -3,6 +3,7 @@ package org.example.ui;
 import org.example.model.Tag;
 import org.example.model.Task;
 import org.example.service.TaskFactory;
+import org.example.service.TaskInputReader;
 import org.example.service.TaskManager;
 import org.example.service.TagManager;
 
@@ -26,15 +27,17 @@ public class TaskMenu {
         while (running) {
             SystemPrinter.info("--- Task Menu ---");
             SystemPrinter.info("1. Add task");
-            SystemPrinter.info("2. Remove task");
-            SystemPrinter.info("3. Mark task as completed");
+            SystemPrinter.info("2. Edit task");
+            SystemPrinter.info("3. Remove task");
+            SystemPrinter.info("4. Mark task as completed");
             SystemPrinter.info("0. Back");
 
             int choice = readInt("Choose option: ");
             switch (choice) {
                 case 1 -> addTask();
-                case 2 -> removeTask();
-                case 3 -> completeTask();
+                case 2 -> updateTask();
+                case 3 -> removeTask();
+                case 4 -> completeTask();
                 case 0 -> running = false;
                 default -> SystemPrinter.warn("Wrong number of option!");
             }
@@ -52,10 +55,50 @@ public class TaskMenu {
 
     private void addTask() {
         Tag chosenTag = chooseTag();
-        TaskFactory factory = new TaskFactory(sc);
+        TaskFactory factory = new TaskFactory();
         Task task = factory.createTask(chosenTag);
         taskManager.save(task);
         SystemPrinter.success("Task added successfully!");
+    }
+
+    private void updateTask(){
+        List<Task> tasks = taskManager.findAll();
+        Integer id = chooseTaskId(tasks,"Enter number of task you want to edit.");
+
+        if (id == null) {
+            SystemPrinter.error("No task found!");
+            return;
+        }
+
+        Task task = taskManager.findById(id);
+        TaskPrinter.printTasks(List.of(task));
+        boolean editing = true;
+        while (editing) {
+            SystemPrinter.info("""
+            Which field do you want to edit?
+            1. Title
+            2. Description
+            3. Date
+            4. Repeat interval
+            5. Tag
+            0. Back
+            """);
+
+            int choice = readInt("Choose option: ");
+            switch (choice) {
+                case 1 -> task.setTitle(TaskInputReader.readValidTitle());
+                case 2 -> task.setDescription(TaskInputReader.readDescription());
+                case 3 -> task.setEndDate(TaskInputReader.readValidDate());
+                case 4 -> task.setRepeatIntervalDays(TaskInputReader.readRepeatInterval());
+                case 5 -> task.setTag(chooseTag());
+                case 0 -> editing = false;
+                default -> SystemPrinter.warn("Wrong number of option!");
+            }
+            TaskPrinter.printTasks(List.of(task));
+        }
+
+        taskManager.update(task);
+        SystemPrinter.success("Task updated successfully!");
     }
 
 
