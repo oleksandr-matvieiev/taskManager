@@ -42,7 +42,7 @@ public class SettingsMenu {
                 case 4 -> changeExportDir();
                 case 5 -> changeDaysAfterDeleteDone();
                 case 0 -> running = false;
-                default -> SystemPrinter.warn("Wrong option!");
+                default -> SystemPrinter.warn("Wrong choice. Try again.");
             }
         }
     }

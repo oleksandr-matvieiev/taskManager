@@ -12,17 +12,17 @@ public class TaskInputReader {
     public static String readValidTitle() {
         String title = null;
         while (title == null || title.isBlank()) {
-            SystemPrinter.info("Write title:");
+            SystemPrinter.info("Enter the task title (cannot be empty):");
             title = sc.nextLine().trim();
             if (title.isBlank()) {
-                SystemPrinter.warn("Title cannot be empty. Please try again.");
+                SystemPrinter.warn("Title cannot be empty. Try again.");
             }
         }
         return title;
     }
 
     public static String readDescription() {
-        SystemPrinter.info("Write description:");
+        SystemPrinter.info("Enter the task description:");
         String description = sc.nextLine().trim();
         return description.isBlank() ? "No description." : description;
     }
@@ -30,16 +30,16 @@ public class TaskInputReader {
     public static LocalDate readValidDate() {
         LocalDate date = null;
         while (date == null) {
-            SystemPrinter.info("Write date (Format dd-MM-yyyy or ddMMyyyy): ");
+            SystemPrinter.info("Enter task end date (Format dd-MM-yyyy/ddMMyyyy/or which you prefer): ");
             String input = sc.nextLine().trim();
             try {
                 date = DateUtils.parseDate(input);
                 if (date.isBefore(LocalDate.now())) {
-                    SystemPrinter.warn("Date cannot be before now. Please try again.");
+                    SystemPrinter.warn("Date cannot be in the past. Try again.");
                     date = null;
                 }
             } catch (IllegalArgumentException e) {
-                SystemPrinter.warn(e.getMessage() + " Please try again.");
+                SystemPrinter.warn(e.getMessage() + " Try again.");
             }
         }
         return date;
@@ -65,7 +65,7 @@ public class TaskInputReader {
 
         if (repeatChoice == 1) {
             while (true) {
-                SystemPrinter.info("Which interval? (Days): ");
+                SystemPrinter.info("Enter the repeat interval in days: ");
                 try {
                     int interval = Integer.parseInt(sc.nextLine().trim());
                     if (interval < 1) {
@@ -74,7 +74,7 @@ public class TaskInputReader {
                         return interval;
                     }
                 } catch (NumberFormatException e) {
-                    SystemPrinter.warn("Please enter a valid number!");
+                    SystemPrinter.warn("Enter a valid number!");
                 }
             }
         }

@@ -39,7 +39,7 @@ public class TaskMenu {
                 case 3 -> removeTask();
                 case 4 -> completeTask();
                 case 0 -> running = false;
-                default -> SystemPrinter.warn("Wrong number of option!");
+                default -> SystemPrinter.warn("Wrong choice. Try again.");
             }
         }
     }
@@ -92,7 +92,7 @@ public class TaskMenu {
                 case 4 -> task.setRepeatIntervalDays(TaskInputReader.readRepeatInterval());
                 case 5 -> task.setTag(chooseTag());
                 case 0 -> editing = false;
-                default -> SystemPrinter.warn("Wrong number of option!");
+                default -> SystemPrinter.warn("Wrong choice. Try again.");
             }
             TaskPrinter.printTasks(List.of(task));
         }
