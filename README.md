@@ -56,6 +56,7 @@ src/main/java/org/example/
 │  ├─ SwingNotifier.java
 │  ├─ TagManager.java
 │  ├─ TaskFactory.java
+│  ├─ TaskInputReader.java
 │  ├─ TaskManager.java
 │  └─ interface TaskNotifier.java
 │
@@ -158,8 +159,9 @@ Choose option: 1
 ```
 --- Task Menu ---
 1. Add task
-2. Remove task
-3. Mark task as completed
+2. Edit task
+3. Remove task
+4. Mark task as completed
 0. Back
 Choose option: 1
 ```
