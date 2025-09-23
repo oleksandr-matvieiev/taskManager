@@ -81,6 +81,20 @@ public class TaskManagerTest {
     }
 
     @Test
+    void updateTask_success() {
+        taskManager.update(validTask);
+
+        verify(taskDAO).update(validTask);
+    }
+
+    @Test
+    void updateTask_failed_validationError() {
+        taskManager.update(invalidTask);
+
+        verify(taskDAO, never()).update(any(Task.class));
+    }
+
+    @Test
     void findAllTasks_success() {
         List<Task> tasks = Collections.singletonList(validTask);
 
