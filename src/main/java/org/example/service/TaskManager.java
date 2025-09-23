@@ -1,6 +1,7 @@
 package org.example.service;
 
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.example.dao.TaskDAO;
@@ -34,14 +35,33 @@ public class TaskManager {
     public void save(Task task) {
         var violations = VALIDATOR.validate(task);
         if (!violations.isEmpty()) {
-            violations.forEach(v -> log.warn("Validation error: {}", v.getMessage()));
+            violations.forEach(TaskManager::warnValidationError);
             return;
         }
         taskDAO.save(task);
     }
 
+    public void update(Task task) {
+        var violations = VALIDATOR.validate(task);
+        if (!violations.isEmpty()) {
+            violations.forEach(TaskManager::warnValidationError);
+            return;
+        }
+        taskDAO.update(task);
+    }
+
     public List<Task> findAll() {
         return taskDAO.findAll();
+    }
+
+    public Task findById(int id) {
+        Task task = taskDAO.findById(id);
+
+        if (task == null) {
+            log.warn("Task with id {} not found", id);
+            throw new IllegalArgumentException("Task with id " + id + " not found");
+        }
+        return taskDAO.findById(id);
     }
 
     public void deleteTaskWithArchive(Integer id) {
@@ -110,6 +130,11 @@ public class TaskManager {
                 taskDAO.deleteById(task.getId());
             }
         }
+    }
+
+
+    private static void warnValidationError(ConstraintViolation<Task> v) {
+        log.warn("Validation error: {}", v.getMessage());
     }
 
 
